@@ -1,14 +1,17 @@
 {
-  "name": "with-passport",
+  "name": "mode-banking-web",
   "scripts": {
     "dev": "next",
     "build": "next build",
     "start": "next start"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.6.2",
     "@hapi/iron": "6.0.0",
+    "antd": "^4.15.1",
     "axios": "^0.21.1",
     "cookie": "0.4.1",
+    "immer": "^9.0.1",
     "next": "latest",
     "next-connect": "0.8.1",
     "passport": "0.4.1",

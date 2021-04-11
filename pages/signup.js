@@ -12,16 +12,11 @@ const Signup = () => {
   async function handleSubmit(e) {
     e.preventDefault()
 
+    debugger;
     if (errorMsg) setErrorMsg('')
 
     const body = {
-      username: e.currentTarget.username.value,
-      password: e.currentTarget.password.value,
-    }
-
-    if (body.password !== e.currentTarget.rpassword.value) {
-      setErrorMsg(`The passwords don't match`)
-      return
+      username: e.currentTarget.username.value
     }
 
     try {

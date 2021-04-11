@@ -1,6 +1,9 @@
 import Head from 'next/head'
 import Header from './header'
 
+
+const date = new Date();
+
 const Layout = (props) => (
   <>
     <Head>
@@ -11,6 +14,10 @@ const Layout = (props) => (
 
     <main>
       <div className="container">{props.children}</div>
+    <footer>
+        <hr />
+        <p className="align-self-center">Kris - Copyright © {date.getFullYear()} </p>
+    </footer>
     </main>
 
     <style jsx global>{`
@@ -27,9 +34,15 @@ const Layout = (props) => (
           'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
       }
       .container {
-        max-width: 42rem;
+        max-width: 80rem;
         margin: 0 auto;
         padding: 2rem 1.25rem;
+      }
+      footer {
+        color: #fff;
+        background-color: #333;
+        text-align: center;
+        min-height:5rem;
       }
     `}</style>
   </>

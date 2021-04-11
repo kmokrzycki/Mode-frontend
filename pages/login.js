@@ -3,6 +3,7 @@ import Router from 'next/router'
 import { useUser } from '../lib/hooks'
 import Layout from '../components/layout'
 import Form from '../components/form'
+import UsersList from '../components/Users/List'
 
 const Login = () => {
   useUser({ redirectTo: '/', redirectIfFound: true })
@@ -41,6 +42,9 @@ const Login = () => {
       <div className="login">
         <Form isLogin errorMessage={errorMsg} onSubmit={handleSubmit} />
       </div>
+
+      <br/ >
+      <UsersList />
       <style jsx>{`
         .login {
           max-width: 21rem;
