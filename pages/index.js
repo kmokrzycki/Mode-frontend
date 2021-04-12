@@ -36,17 +36,19 @@ const Home = () => {
       })
       if (res.status === 200) {
         const history = await res.json();
+        history.transactions.sort(((a, b) => (a.createdAt > b.createdAt) ? -1 : ((a.createdAt < b.createdAt) ? 1 : 0)));
         updateState(produce(componentState, draftState => {
           draftState.transactions.isLoading = false;
-          draftState.transactions.list = history.transactions;
+          draftState.transactions.list = history.transactions.sort(((a, b) => b.createdAt < a.createdAt));
           draftState.isModalVisible = false;
         }));
       } else {
-        message.error('Failed to Get Transactions');
+        if (user.id) {
+          message.error('Failed to Get Transactions');
+        }
       }
     } catch (error) {
       console.error('An unexpected error happened occurred:', error)
-      setErrorMsg(error.message)
     }
   }
 
