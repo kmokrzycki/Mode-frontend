@@ -3,6 +3,7 @@ import Link from 'next/link';
 import produce from 'immer';
 import { useUser } from '../lib/hooks'
 import Layout from '../components/layout'
+import UserBalance from '../components/User/Balance';
 import TransactionAdd from '../components/Transaction/Add';
 import TransactionHistory from '../components/Transaction/History';
 
@@ -12,7 +13,6 @@ import {
 } from 'antd';
 
 import {
-  PoundCircleOutlined,
   UserOutlined,
   SendOutlined,
 } from '@ant-design/icons';
@@ -22,7 +22,7 @@ const Home = () => {
 
   const [componentState, updateState] = useState({
     form: {},
-    balance: user?.balance || 0,
+    sessionBalace: user?.balance,
     transactions: {},
     newTransaction: {},
   });
@@ -30,17 +30,24 @@ const Home = () => {
 
   const refreshTransactions = async () => {
     try {
-      const res = await fetch('/api/transactions', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      })
-      if (res.status === 200) {
+      const [res, balance] = await Promise.all([
+        fetch('/api/transactions', {
+          method: 'GET'
+        }),
+        fetch('/api/user', {
+          method: 'GET'
+        }),
+      ])
+      if (res.status === 200 && balance.status === 200 ) {
         const history = await res.json();
+        const newBalance = await balance.json();
+        console.log('New Balance!');
         history.transactions.sort(((a, b) => (a.createdAt > b.createdAt) ? -1 : ((a.createdAt < b.createdAt) ? 1 : 0)));
         updateState(produce(componentState, draftState => {
           draftState.transactions.isLoading = false;
           draftState.transactions.list = history.transactions.sort(((a, b) => b.createdAt < a.createdAt));
           draftState.isModalVisible = false;
+          draftState.balance = newBalance.balance;
         }));
       } else {
         if (user.id) {
@@ -63,7 +70,7 @@ const Home = () => {
   const newTransaction = (value, name) => {
     console.log('Event: ', name, value);
     updateState(produce(componentState, draftState => {
-        draftState.newTransaction[name] = value;
+      draftState.newTransaction[name] = value;
     }));
   }
 
@@ -85,7 +92,7 @@ const Home = () => {
       })
       if (res.status === 200) {
         const latest = await res.json();
-        console.log('New Transaction is: ', );
+        console.log('New Transaction is: ',);
         updateState(produce(componentState, draftState => {
           draftState.isModalVisible = false;
           draftState.newTransaction = {};
@@ -112,7 +119,7 @@ const Home = () => {
     <Layout>
       <Card title={`${user?.name} - Welcome to Mode Personal Banking!`}>
         <Card type="inner" title="Account details" extra={<Button type='primary'><Link href='/profile'><a><UserOutlined />&nbsp;My Account</a></Link></Button>}>
-          Balance: {user?.balance} <PoundCircleOutlined />
+          <UserBalance />
         </Card>
         <Card
           style={{ marginTop: 16 }}
@@ -120,17 +127,17 @@ const Home = () => {
           title="Recent Transactions"
           extra={
             <Button type='primary' onClick={showModal}>
-                  <SendOutlined />
+              <SendOutlined />
                     &nbsp;Add Transaction
               </Button>}
         >
           {componentState.transactions.isLoading ? (<Spin size="large" />) : (
             <TransactionHistory data={componentState.transactions.list} />
-            )}
+          )}
         </Card>
       </Card>
-      <Modal title="Basic Modal" visible={componentState.isModalVisible} onOk={handleOk} okButtonProps={{disabled:false}}  onCancel={handleCancel}>
-            <TransactionAdd handleChange={newTransaction}/>
+      <Modal title="Basic Modal" visible={componentState.isModalVisible} onOk={handleOk} okButtonProps={{ disabled: false }} onCancel={handleCancel}>
+        <TransactionAdd handleChange={newTransaction} />
       </Modal>
 
       <style jsx>{`
